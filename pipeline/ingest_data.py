@@ -1,34 +1,9 @@
-#!/usr/bin/env python
-# coding: utf-8
-
-# In[2]:
-
-
 import pandas as pd
+from sqlalchemy import create_engine
+from tqdm.auto import tqdm
+import click
 
-
-# In[8]:
-
-
-# Read a sample of the data
-prefix = 'https://github.com/DataTalksClub/nyc-tlc-data/releases/download/yellow/'
-url = prefix + 'yellow_tripdata_2021-01.csv.gz'
-
-# Display first rows
-display(df.head())
-
-# Check data types
-print(df.dtypes)
-
-# Check data shape
-print(df.shape)
-
-
-# In[9]:
-
-
-# Specify the types to fix the DtypeWarning
-# Define data types
+# Define the data types (from our previous steps)
 dtype = {
     "VendorID": "Int64",
     "passenger_count": "Int64",
@@ -50,53 +25,49 @@ dtype = {
 
 parse_dates = ["tpep_pickup_datetime", "tpep_dropoff_datetime"]
 
-# Create the iterator WITHOUT the 100 row limit
-df_iter = pd.read_csv(
-    url,
-    iterator=True,
-    chunksize=100000,
-    dtype=dtype,
-    parse_dates=parse_dates
-)
+@click.command()
+@click.option('--pg-user', default='root', help='PostgreSQL user')
+@click.option('--pg-pass', default='root', help='PostgreSQL password')
+@click.option('--pg-host', default='localhost', help='PostgreSQL host')
+@click.option('--pg-port', default=5432, type=int, help='PostgreSQL port')
+@click.option('--pg-db', default='ny_taxi', help='PostgreSQL database name')
+@click.option('--target-table', default='yellow_taxi_data', help='Target table name')
+def run(pg_user, pg_pass, pg_host, pg_port, pg_db, target_table):
+    
+    print(f"Connecting to postgresql://{pg_user}:***@{pg_host}:{pg_port}/{pg_db}...")
+    
+    # Create database connection
+    connection_string = f'postgresql://{pg_user}:{pg_pass}@{pg_host}:{pg_port}/{pg_db}'
+    engine = create_engine(connection_string)
 
+    # Data URL
+    url = "https://github.com/DataTalksClub/nyc-tlc-data/releases/download/yellow/yellow_tripdata_2021-01.csv.gz"
+    
+    print(f"Downloading data from {url}...")
 
-# In[6]:
+    # Create iterator
+    df_iter = pd.read_csv(
+        url, 
+        iterator=True, 
+        chunksize=100000, 
+        dtype=dtype, 
+        parse_dates=parse_dates
+    )
 
+    # Get first chunk to create table
+    first_chunk = next(df_iter)
 
-from sqlalchemy import create_engine
+    print(f"Creating table '{target_table}'...")
+    first_chunk.head(0).to_sql(name=target_table, con=engine, if_exists='replace')
+    
+    print("Inserting first chunk...")
+    first_chunk.to_sql(name=target_table, con=engine, if_exists='append')
 
-# Create Database Connection
-engine = create_engine('postgresql://root:root@localhost:5432/ny_taxi')
+    print("Inserting remaining chunks...")
+    for chunk in tqdm(df_iter):
+        chunk.to_sql(name=target_table, con=engine, if_exists='append')
 
-# Connect
-engine.connect()
-print("Connected!")
+    print("Finished! Data ingestion complete.")
 
-
-# In[10]:
-
-
-from tqdm.auto import tqdm
-
-# Get the first chunk
-first_chunk = next(df_iter)
-
-# Create table (replace if exists)
-first_chunk.head(0).to_sql(name='yellow_taxi_data', con=engine, if_exists='replace')
-print("Table created")
-
-# Insert first chunk
-first_chunk.to_sql(name='yellow_taxi_data', con=engine, if_exists='append')
-print("Inserted first chunk:", len(first_chunk))
-
-# Loop over the rest with progress bar
-for df_chunk in tqdm(df_iter):
-    df_chunk.to_sql(name='yellow_taxi_data', con=engine, if_exists='append')
-    # print("Inserted chunk:", len(df_chunk)) # Optional: verify length
-
-
-# In[ ]:
-
-
-
-
+if __name__ == '__main__':
+    run()
