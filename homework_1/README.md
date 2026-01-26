@@ -5,11 +5,12 @@ This file contains the solutions to the module 1 homework that covers Docker, SQ
 What's the version of pip in the python:3.13 image?
 
 **This downloads the image and starts it**
+
 **Command**
 ```bash
 docker run -it --entrypoint bash python:3.13
 ```
-Then run thisto check the version
+Then run this to check the version
 ```bash
 pip –version
 ```
@@ -125,5 +126,6 @@ LIMIT 1;
 
 ### **Learning in public links**
 [LinkedIn](https://www.linkedin.com/posts/oluwatosin-lawal-70105810b_dataengineering-vscode-datatalksclub-activity-7421629918863577088-Wgv9?utm_source=share&utm_medium=member_desktop&rcm=ACoAABuX_vEBrMwbp394uco22GvbJi1UsrI2R7o)
+
 
 
