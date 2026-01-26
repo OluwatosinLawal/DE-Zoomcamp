@@ -4,8 +4,8 @@ This file contains the solutions to the module 1 homework that covers Docker, SQ
 ## **Question 1**
 What's the version of pip in the python:3.13 image?
 
-**Command**
 This downloads the image and starts it
+**Command**
 ```bash
 docker run -it --entrypoint bash python:3.13
 ```
