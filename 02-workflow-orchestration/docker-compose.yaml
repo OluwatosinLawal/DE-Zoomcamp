@@ -9,7 +9,7 @@ volumes:
 services:
   # 1. Application Database (Where you load Taxi Data)
   pgdatabase:
-    image: postgres:16  # FIXED: Changed from 18 to 16
+    image: postgres:16
     container_name: pgdatabase
     environment:
       POSTGRES_USER: root
@@ -18,8 +18,7 @@ services:
     ports:
       - "5432:5432"
     volumes:
-      - ny_taxi_postgres_data:/var/lib/postgresql/data # FIXED: Added /data
-    # Removed "depends_on: kestra" to avoid startup loops
+      - ny_taxi_postgres_data:/var/lib/postgresql/data
 
   # 2. pgAdmin (UI for your Database)
   pgadmin:
@@ -29,17 +28,17 @@ services:
       PGADMIN_DEFAULT_EMAIL: admin@admin.com
       PGADMIN_DEFAULT_PASSWORD: root
     ports:
-      - "8085:80" # Note: You must open port 8085 now!
+      - "8085:80"
     depends_on:
       pgdatabase:
         condition: service_started
 
   # 3. Kestra's Internal Database (System backend)
   kestra_postgres:
-    image: postgres:16 # FIXED: Changed from 18 to 16
+    image: postgres:16
     container_name: kestra_postgres
     volumes:
-      - kestra_postgres_data:/var/lib/postgresql/data # FIXED: Added /data
+      - kestra_postgres_data:/var/lib/postgresql/data
     environment:
       POSTGRES_DB: kestra
       POSTGRES_USER: kestra
@@ -70,6 +69,13 @@ services:
             username: kestra
             password: k3str4
         kestra:
+          # --- AI CONFIGURATION ADDED HERE ---
+          ai:
+            type: gemini
+            gemini:
+              model-name: gemini-2.5-flash
+              api-key: "AIzaSyD-bjbA5st-kYmi8WqTJ7UOGkVMCpmovvQ"
+          # -----------------------------------
           server:
             basicAuth:
               username: "admin@kestra.io"
@@ -91,15 +97,3 @@ services:
     depends_on:
       kestra_postgres:
         condition: service_healthy
-        
-        kestra:
-    image: kestra/kestra:v1.1
-    container_name: kestra
-    environment:
-      KESTRA_CONFIGURATION: |
-        kestra:
-          ai:
-            type: gemini
-            gemini:
-              model-name: gemini-2.5-flash
-              api-key: "AIzaSyD-bjbA5st-kYmi8WqTJ7UOGkVMCpmovvQ"
