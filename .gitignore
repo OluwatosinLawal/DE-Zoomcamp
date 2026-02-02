@@ -208,3 +208,6 @@ __marimo__/
 
 #ignore terraform
 *.json
+
+#ignore .env
+.env
