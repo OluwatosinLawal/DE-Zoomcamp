@@ -1,4 +1,4 @@
-# [**Module 2 Homework**](https://github.com/OluwatosinLawal/DE-Zoomcamp/tree/main/homework_1)
+# [**Module 2 Homework**](https://github.com/OluwatosinLawal/DE-Zoomcamp/tree/main/homework_2)
 This file contains the solutions to the module 2 homework that covers Testra workflow orchestration with Postgres and Bigquery.
 
 ## **Question 1**
@@ -56,7 +56,7 @@ WHERE filename LIKE '%2021-03%';
 
 
 ### **Learning in public links**
-[LinkedIn](https://www.linkedin.com/posts/oluwatosin-lawal-70105810b_dataengineering-vscode-datatalksclub-activity-7421629918863577088-Wgv9?utm_source=share&utm_medium=member_desktop&rcm=ACoAABuX_vEBrMwbp394uco22GvbJi1UsrI2R7o)
+[LinkedIn](https://www.linkedin.com/posts/oluwatosin-lawal-70105810b_dataengineering-dezoomcamp-kestra-activity-7424202513387565056-wPP_?utm_source=share&utm_medium=member_desktop&rcm=ACoAABuX_vEBrMwbp394uco22GvbJi1UsrI2R7o)
 
 
 
