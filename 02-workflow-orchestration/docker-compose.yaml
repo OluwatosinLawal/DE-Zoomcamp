@@ -91,3 +91,15 @@ services:
     depends_on:
       kestra_postgres:
         condition: service_healthy
+        
+        kestra:
+    image: kestra/kestra:v1.1
+    container_name: kestra
+    environment:
+      KESTRA_CONFIGURATION: |
+        kestra:
+          ai:
+            type: gemini
+            gemini:
+              model-name: gemini-2.5-flash
+              api-key: "AIzaSyD-bjbA5st-kYmi8WqTJ7UOGkVMCpmovvQ"
